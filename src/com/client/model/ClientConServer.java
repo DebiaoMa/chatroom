@@ -1,33 +1,25 @@
 package com.client.model;
 
 
-import com.client.tools.ClientConServerThread;
 import com.client.tools.ManageClientThread;
 import com.common.Message;
 import com.common.MessageType;
 import com.common.User;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
 import java.net.Socket;
 import java.util.Date;
 
 public class ClientConServer {
 
-    private Socket socket;
-
-//    public static void main(String[] args) {
-//        ClientToServer clientToServer = new ClientToServer();
-//    }
 
     public boolean sendLogIfoToServer (Object o) {
 
         boolean flag = false;
 
         try {
-            socket = new Socket("192.168.0.103", 9999);
+            Socket socket = new Socket("192.168.0.103", 9999);
             //发送验证消息
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(o);
@@ -52,10 +44,10 @@ public class ClientConServer {
         return flag;
     }
 
-    public static void dealSendAction(String srcId, String distId, String content) {
+    public static void dealSendAction(String srcId, String distId,String messageType, String content) {
 
         Message msg = new Message();
-        msg.setMesType(MessageType.messageCommMsg);
+        msg.setMesType(messageType);
         msg.setSender(srcId);
         msg.setGetter(distId);
         msg.setCon(content);
@@ -71,5 +63,10 @@ public class ClientConServer {
         }
     }
 
+    public void sendOutInfo(User user) {
+
+        dealSendAction(user.getName(), "server", MessageType.messageOut, user.getName() + "登出");
+
+    }
 
 }

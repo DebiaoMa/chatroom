@@ -1,6 +1,6 @@
 package com.client.view;
 
-import com.client.tools.MulticastReadThread;
+import com.client.model.MulticastReadThread;
 
 import javax.swing.*;
 import javax.swing.text.*;

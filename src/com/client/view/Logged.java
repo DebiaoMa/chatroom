@@ -2,13 +2,12 @@ package com.client.view;
 
 import com.client.tools.ManageChat;
 import com.common.Message;
+import com.common.MessageType;
+import com.common.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 /**
  * 包括陌生人和黑名单
@@ -19,7 +18,7 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
 
     //处理第一张卡片，点击我的好友时的界面
     JPanel friendFrame, friendList;
-    JButton friend, group, broadcast;
+    JButton friend, group, broadcast, outButton;
     JScrollPane scrollList;   //滚动列表
 
     //处理第二张，点击卡片获得群聊时的界面
@@ -34,10 +33,10 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
 
     CardLayout cardLayout;
 
-//    public static void main(String[] args) {
-//
-//        Logged logged = new Logged("1");
-//    }
+    public static void main(String[] args) {
+
+        Logged logged = new Logged("1");
+    }
 
 
     public Logged(String srcId) {
@@ -51,6 +50,8 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
         group.addActionListener(this);
         broadcast = new JButton("我要广播");
         broadcast.addActionListener(this);
+        outButton = new JButton("退出登录");
+        outButton.addActionListener(this);
 
         friendFrame = new JPanel(new BorderLayout());
         //假装有21个好友
@@ -73,9 +74,10 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
 
         scrollList = new JScrollPane(friendList);
 
-        JPanel total = new JPanel(new GridLayout(2,1));
+        JPanel total = new JPanel(new GridLayout(3,1));
         total.add(group);
         total.add(broadcast);
+        total.add(outButton);
 
         friendFrame.add(friend, "North");
         friendFrame.add(scrollList, "Center");
@@ -113,12 +115,32 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
         this.add(friendFrame, "card1");
 //        this.add(groupFrame, "card2");
 
-        this.setBounds(300,300,250,450);
+        this.setBounds(300,300,250,470);
         //显示自己的账户
         this.setTitle(this.srcId);
         this.setIconImage((new ImageIcon(this.getClass().getResource("/image/qq.gif"))).getImage());
+
+//        this.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//
+//                dispose();
+//            }
+//
+//            @Override
+//            public void windowClosed(WindowEvent e) {
+//                Message msg = new Message();
+//                msg.setSender(srcId);
+//                msg.setGetter("server");
+//                msg.setCon("sign out");
+//                msg.setMesType(MessageType.messageOut);
+//
+//                Login.clientUser.signOut(msg);
+//            }
+//        });
+
         this.setAlwaysOnTop(true);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
     }
 
@@ -128,10 +150,15 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
 
     public void updateFriend(Message msg) {
 
-        String[] onlineList = msg.getCon().split(" ");
+        String onlineList = msg.getCon();
 
-        for (int i = 0; i < onlineList.length; i++) {
-            eachFriend[Integer.parseInt(onlineList[i]) - 1].setEnabled(true);
+        for (int i = 1; i <= 20; i++) {
+            if (onlineList.contains(String.valueOf(i))){
+                eachFriend[i-1].setEnabled(true);
+            } else {
+                eachFriend[i-1].setEnabled(false);
+            }
+
         }
     }
 
@@ -152,6 +179,12 @@ public class Logged extends JFrame implements ActionListener, MouseListener {
             ManageChat.addGroupChat(srcId, groupChat);
         } else if (e.getSource() == broadcast) {
             Broadcast broadcast = new Broadcast(srcId, "allLogged");
+        } else if (e.getSource() == outButton) {
+            System.out.println("退出登录");
+            User user = new User();
+            user.setName(srcId);
+
+            Login.clientUser.signOut(user);
         }
     }
 

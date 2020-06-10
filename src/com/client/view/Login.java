@@ -16,7 +16,9 @@ import java.io.ObjectOutputStream;
 
 public class Login extends JFrame implements ActionListener {
 
-    private static final long serialVersionUID = 4410731225941890026L;
+    //创建model 层 client
+    static ClientUser clientUser;
+
     //界面北部的部件
     JLabel northLable;
 
@@ -80,7 +82,7 @@ public class Login extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == log) {   //创建登陆实例
-            ClientUser clientUser = new ClientUser();
+            clientUser = new ClientUser();
             User user = new User();
             user.setName(accountField.getText().trim());
             user.setPassword(new String(passwordField.getPassword()));

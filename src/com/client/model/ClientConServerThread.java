@@ -1,10 +1,14 @@
-package com.client.tools;
+package com.client.model;
 
+import com.client.tools.ManageChat;
+import com.client.tools.ManageFriendList;
+import com.client.tools.Reg;
 import com.client.view.Chat;
 import com.client.view.Logged;
 import com.common.Message;
 import com.common.MessageType;
 
+import java.awt.*;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
@@ -29,6 +33,7 @@ public class ClientConServerThread extends Thread{
                 ObjectInputStream ois = new ObjectInputStream(this.socket.getInputStream());
                 Message msg = (Message) ois.readObject();
 
+
                 if (msg.getMesType().equals(MessageType.messageCommMsg)) {
 
                     dealCommMsg(msg);
@@ -38,6 +43,12 @@ public class ClientConServerThread extends Thread{
                 } else if (msg.getMesType().equals(MessageType.messageBroadcast)) {
 
                     dealBroadcastMsg(msg);
+                } else if (msg.getMesType().equals(MessageType.messageReceiveFile)) {
+
+                    dealReceiveFile(msg);
+                } else if (msg.getMesType().equals(MessageType.messageIp)) {
+
+                    dealGetIp(msg);
                 }
 
             } catch (Exception e) {
@@ -54,8 +65,10 @@ public class ClientConServerThread extends Thread{
 
         System.out.println("come from " + msg.getSender() +":" + msg.getCon());
         System.out.println("comm:" + msg.getGetter() + msg.getSender());
-        Chat chat = ManageChat.getChat(msg.getGetter() + msg.getSender());  //myId + senderId 来唯一确定聊天窗口
+        //myId + senderId 来唯一确定聊天窗口
+        Chat chat = ManageChat.getChat(msg.getGetter() + msg.getSender());
         chat.showMessage(msg);
+
     }
 
     public void dealOnlineFriendMsg(Message msg) {
@@ -73,4 +86,18 @@ public class ClientConServerThread extends Thread{
         chat.showMessage(msg);
     }
 
+    public void dealReceiveFile(Message msg) {
+
+        Chat chat = ManageChat.getChat(msg.getGetter() + msg.getSender());
+        chat.printOnScreen(msg.getSendTime() + "\n正在接收来自 " + msg.getSender() + "的文件\n", Color.black, 16);
+        FileTransfer.receiveFile(msg);
+        chat.printOnScreen("传输完成", Color.black, 16);
+    }
+
+    public void dealGetIp(Message msg) {
+
+        FileTransfer.sendFile(msg);
+        Chat chat = ManageChat.getChat(msg.getGetter() + msg.getSender());
+        chat.printOnScreen("传输完成", Color.black, 16);
+    }
 }

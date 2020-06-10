@@ -2,6 +2,7 @@ package com.client.view;
 
 import com.client.tools.ManageClientThread;
 import com.common.Message;
+import com.common.MessageType;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -56,7 +57,7 @@ public class Broadcast extends JFrame implements ActionListener {
         if (e.getSource() == sendButton) {
 
             Message msg = new Message();
-            msg.setMesType("6");
+            msg.setMesType(MessageType.messageBroadcast);
             msg.setSender(this.srcId);
             msg.setGetter("all");
             msg.setCon(this.field.getText());
@@ -64,7 +65,8 @@ public class Broadcast extends JFrame implements ActionListener {
 
             try {
                 ObjectOutputStream oos = new ObjectOutputStream(
-                        ManageClientThread.getManageClientThread(srcId).getSocket().getOutputStream());
+                        ManageClientThread.getManageClientThread(srcId)
+                                .getSocket().getOutputStream());
                 oos.writeObject(msg);
 
             } catch (Exception exception) {

@@ -12,12 +12,12 @@ public class Message implements java.io.Serializable{
 
 
     private static final long serialVersionUID = -1894460174037487429L;
-    private String mesType;
+    private String mesType;         //消息类型
 
-    private String sender;
-    private String getter;
+    private String sender;          //发送方
+    private String getter;          //接收方
     private String con;             //内容
-    private String sendTime = new Date().toString();
+    private String sendTime;        //发送时间
 
     public String getSender() {
         return sender;

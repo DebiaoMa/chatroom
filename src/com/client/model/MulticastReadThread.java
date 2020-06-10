@@ -1,6 +1,6 @@
-package com.client.tools;
+package com.client.model;
 
-import com.client.model.Multicast;
+import com.client.tools.ManageChat;
 import com.client.view.GroupChat;
 
 import java.io.IOException;

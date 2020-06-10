@@ -1,7 +1,9 @@
 package com.client.view;
 
 import com.client.model.ClientConServer;
+import com.client.tools.ManageChat;
 import com.client.tools.ManageClientThread;
+import com.client.tools.Reg;
 import com.common.Message;
 import com.common.MessageType;
 
@@ -28,11 +30,13 @@ public class Chat extends JFrame{
     private JPanel jPanel;
     private JScrollPane outScroll;
 
+    private String filePath = null;
+    private String chatCon = null;
 
-//    public static void main(String[] args) {
-//
-//        Chat chat = new Chat("ycd", ":1");
-//    }
+    public static void main(String[] args) {
+
+        Chat chat = new Chat("ycd", ":1");
+    }
 
     public Chat(String srcId, String distId) {
 
@@ -53,23 +57,61 @@ public class Chat extends JFrame{
         expressionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("fuck");
+                Emoji emoji = new Emoji(textInput, srcId + distId);
+
             }
         });
         sendButton = new JButton("发送");
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ClientConServer.dealSendAction(srcId, distId, textInput.getText());
-                String myShow = new Date().toString() + "\n" + "我说； " + textInput.getText() + "\n";
+
+//                chatCon = textInput.getText();
+//                System.out.println(chatCon);
+
+                if (chatCon != null) {
+                    ClientConServer.dealSendAction(srcId, distId, MessageType.messageCommMsg, chatCon);
+                } else {
+                    chatCon = textInput.getText();
+                    ClientConServer.dealSendAction(srcId, distId, MessageType.messageCommMsg, chatCon);
+                }
+
+                String myShow = new Date().toString() + "\n" + "我说: " + chatCon + "\n";
+
+                Reg.showAll(chatCon, textOutput, srcId+distId);
+                chatCon = null;
                 textInput.setText("");
-                printOnScreen(myShow, Color.black, 16);
             }
         });
+
         fileTransferButton = new JButton("发送文件");
         fileTransferButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                String fileName = null;
+                //按钮点击事件
+                JFileChooser chooser = new JFileChooser();             //设置选择器
+                chooser.setMultiSelectionEnabled(true);             //设为多选
+                int returnVal = chooser.showOpenDialog(fileTransferButton);        //是否打开文件选择框
+                System.out.println("returnVal="+returnVal);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {          //如果符合文件类型
+
+                    //获取绝对路径
+                    filePath = chooser.getSelectedFile().getAbsolutePath();
+                    fileName = chooser.getSelectedFile().getName();
+
+                    System.out.println("You chose this file: "+ chooser.getSelectedFile()
+                            .getAbsolutePath());  //输出相对路径
+
+                }
+
+                printOnScreen(new Date().toString() +"\n" + distId + " 发送文件 "
+                        + fileName + "\n", Color.black, 16);
+
+                ClientConServer.dealSendAction(srcId, distId, MessageType.messageGetIp, fileName);
+
 
             }
         });
@@ -102,10 +144,12 @@ public class Chat extends JFrame{
 
     public void showMessage(Message msg) {
         if (msg.getMesType().equals(MessageType.messageCommMsg)) {
-            String info = msg.getSendTime() + " \n" + msg.getSender() + " 对你说： " + msg.getCon() + "\n";
+
+            Chat chat = ManageChat.getChat(msg.getGetter() + msg.getSender());
+            Reg.showReceive(msg ,chat.getTextOutput(), chat);
 //            this.area.append(info);
 
-            printOnScreen(info, Color.black, 16);
+//            printOnScreen(info, Color.black, 16);
         } else if (msg.getMesType().equals(MessageType.messageBroadcast)) {
             String info = msg.getSendTime() + " \n" + msg.getSender() + "的广播： " + msg.getCon() + "\n";
 //            this.area.append(info);
@@ -135,4 +179,15 @@ public class Chat extends JFrame{
         }
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setChatCon(String chatCon) {
+        this.chatCon = chatCon;
+    }
+
+    public JTextPane getTextOutput() {
+        return textOutput;
+    }
 }

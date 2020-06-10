@@ -1,5 +1,7 @@
 package com.client.tools;
 
+import com.client.model.ClientConServerThread;
+
 import java.util.HashMap;
 
 /**
@@ -19,5 +21,11 @@ public class ManageClientThread {
     public static ClientConServerThread getManageClientThread(String userId) {
 
         return (ClientConServerThread)hashMap.get(userId);
+    }
+
+    //删除client线程
+    public static void deleteManageClientThread () {
+
+        hashMap.clear();
     }
 }

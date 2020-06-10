@@ -1,13 +1,9 @@
 package com.client.model;
 
 
-import com.client.tools.MulticastReadThread;
-import com.client.view.GroupChat;
-
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Multicast {
